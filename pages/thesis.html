@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Guided Optimization for 3D Gaussian Splatting on Drone Images</title>
+  <meta name="description" content="Master's thesis website by Upendra Oli on AI-guided hyperparameter recommendation for 3D Gaussian Splatting using drone imagery.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="thesis-page research-layout story-layout" data-site-theme="cloud">
+  <nav class="thesis-topbar" aria-label="Thesis page navigation">
+    <a class="thesis-home-link" href="../index.html" aria-label="Return to home">
+      <i class="fa-solid fa-house" aria-hidden="true"></i>
+      <span>Home</span>
+    </a>
+    <button class="thesis-nav-toggle" type="button" aria-label="Open thesis navigation" aria-controls="thesis-topnav" aria-expanded="false">
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
+      <span>Menu</span>
+    </button>
+    <div class="thesis-topnav" id="thesis-topnav">
+      <a href="#top">Thesis</a>
+      <a href="#overview">Overview</a>
+      <a href="#methodology">Methodology</a>
+      <a href="#training-data">Data</a>
+      <a href="#models">Models</a>
+      <a href="#results">Results</a>
+      <a href="#outputs">Outputs</a>
+      <a href="#discussion">Discussion</a>
+    </div>
+    <div class="site-theme-toggle floating-theme-toggle" role="group" aria-label="Website theme selector">
+      <button type="button" class="is-active" data-site-theme="cloud" aria-label="Light theme" aria-pressed="true"></button>
+      <button type="button" data-site-theme="dark" aria-label="Dark theme" aria-pressed="false"></button>
+    </div>
+  </nav>
+
+  <header class="story-hero" id="top">
+    <img class="hero-bg-video" src="../assets/photo/brasov.png" alt="" aria-hidden="true">
+    <div class="research-container story-grid">
+      <div class="story-hero-copy">
+        <p class="section-kicker">Copernicus Master in Digital Earth &middot; MSc Thesis &middot; 2026</p>
+        <h1>AI-Guided Optimization for 3D Gaussian Splatting on Drone Images</h1>
+        <p class="meta-line">
+          <strong>Upendra Oli</strong><br>
+          Supervisor: Dr. Stanislav Popelka &middot; Dr. Getachew Workineh Gella
+        </p>
+        <div class="hero-actions">
+          <a href="#overview"><i class="fa-solid fa-circle-info"></i> Overview</a>
+          <a href="https://geomatupen.github.io/Thesis-Results-Platform/"><i class="fa-solid fa-chart-line"></i> Interactive results</a>
+        </div>
+      </div>
+    </div>
+    <a class="hero-scroll-cue" href="#overview" aria-label="Go to overview section">
+      <span>Explore thesis</span>
+      <i class="fa-solid fa-arrow-down-long" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <main>
+    <section class="story-section section-light" id="overview">
+      <div class="research-container story-grid">
+        <div class="story-copy">
+          <p class="section-kicker">Overview and Aim</p>
+          <p>3D Gaussian Splatting (3DGS) can create photorealistic 3D scenes, but its result depends on the training settings. Drone projects differ in overlap, viewing angle, texture, vegetation, terrain, image detail, and flight pattern. Because of this, the same default hyperparameters may not work equally well for every reconstruction.</p>
+          <p>This thesis learns from previous drone-image reconstruction experiments to recommend better starting hyperparameters for new unseen projects. The goal is to reduce manual trial-and-error before training begins.</p>
+        </div>
+        <div class="story-visual">
+          <p>The figure shows the main idea of the research. Drone-image projects may look similar as input folders, but their project conditions can be very different. These conditions can affect 3DGS training behaviour and reconstruction quality.</p>
+          <div class="process-ribbon">
+            <span>Drone-image projects</span>
+            <i class="fa-solid fa-arrow-right-long"></i>
+            <span>Project conditions</span>
+            <i class="fa-solid fa-arrow-right-long"></i>
+            <span>3DGS behaviour</span>
+          </div>
+          <div class="summary-strip">
+            <article><i class="fa-solid fa-sliders" aria-hidden="true"></i><div><strong>Problem</strong><span>Default hyperparameters may not fit every drone-image project.</span></div></article>
+            <article><i class="fa-solid fa-database" aria-hidden="true"></i><div><strong>Research idea</strong><span>Learn from previous reconstruction experiments.</span></div></article>
+            <article><i class="fa-solid fa-bullseye" aria-hidden="true"></i><div><strong>Expected value</strong><span>Recommend better starting hyperparameters for unseen projects.</span></div></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section section-alt" id="methodology">
+      <div class="research-container story-stack">
+        <div class="story-grid">
+          <div class="story-copy">
+            <p class="section-kicker">Methodology Overview</p>
+            <p>The methodology follows four main steps: project preparation, training-data preparation, model training, and final testing.</p>
+            <p>First, drone-image projects are prepared for 3DGS. Images are resized, and SfM/COLMAP estimates camera poses and sparse scene structure. Project descriptors are also prepared to describe project conditions such as image detail, overlap, viewing geometry, texture, terrain, and vegetation.</p>
+            <p>Next, model-development projects are used to create training data. Each project is first reconstructed with default 3DGS settings as a baseline run. Controlled hyperparameter multiplier combinations are then applied to the default settings and reconstructed as exploration runs. The trained models use this information to recommend multipliers for separate unseen test projects.</p>
+            <button type="button" class="detail-link" data-detail-target="methodology-detail"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> View detailed methodology</button>
+          </div>
+          <figure class="figure-card feature-figure">
+            <button type="button" class="figure-button" data-modal-src="../assets/figures/figure2_methodology_diagram.png" data-modal-title="Methodology overview workflow">
+              <img src="../assets/figures/figure2_methodology_diagram.png" alt="Overview workflow of the learning-based hyperparameter selection process">
+            </button>
+            <figcaption>The diagram gives a simple overview of the thesis workflow. It shows how drone-image projects are prepared, converted into training data, used for model training, and finally tested on unseen projects.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section section-light" id="training-data">
+      <div class="research-container story-grid compact-story-grid">
+        <div class="story-copy">
+          <p class="section-kicker">Training Data Preparation</p>
+          <p>The training data was built from completed 3DGS experiments on the model-development projects. Each usable exploration run was stored as one training row. This means the models learned from measured reconstruction results produced by real 3DGS runs.</p>
+          <p>A training row combines three parts: project descriptors, the tested multiplier combination, and the relative quality score. The descriptors describe the project, the multiplier shows which hyperparameter setting was tested, and the score shows whether that setting performed better or worse than the project baseline.</p>
+          <p>This structure allows the models to learn how project conditions relate to multiplier choices and reconstruction quality. The unseen test projects were kept separate and used only for final evaluation, so the final results could be checked on projects not used during training-data preparation.</p>
+          <div class="section-action-row">
+            <button type="button" class="detail-link" data-detail-target="training-data-detail"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> View training-data details</button>
+            <button type="button" class="detail-link" data-detail-target="data-sources-detail"><i class="fa-solid fa-database"></i> View data sources</button>
+          </div>
+        </div>
+        <div>
+          <p class="subsection-label">Training data steps</p>
+          <ol class="compact-step-list" aria-label="Training data preparation steps">
+            <li>baseline run</li>
+            <li>exploration runs</li>
+            <li>quality scoring</li>
+            <li>training row</li>
+          </ol>
+          <p class="visual-note training-step-note"><strong>Note:</strong> Each row represents one completed exploration run. The baseline run is used only to calculate the relative quality score.</p>
+          <div class="training-equation">
+            <span>Project descriptors</span>
+            <i class="fa-solid fa-plus"></i>
+            <span>tested multiplier</span>
+            <i class="fa-solid fa-plus"></i>
+            <span>relative quality score</span>
+            <i class="fa-solid fa-equals"></i>
+            <strong>one training row</strong>
+          </div>
+          <div class="metric-strip compact-metrics" role="group" aria-label="Dataset summary">
+            <article><strong>58</strong><span>drone-image projects</span></article>
+            <article><strong>46</strong><span>model-development projects</span></article>
+            <article><strong>12</strong><span>unseen test projects</span></article>
+            <article><strong>653</strong><span>usable training rows</span></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section section-alt" id="models">
+      <div class="research-container story-stack">
+        <div class="story-grid">
+          <div class="story-copy">
+            <p class="section-kicker">Model Training and Testing</p>
+            <p>Two scoring models were developed and tested: Ridge Regression and a compact MLP. Their task was to score candidate hyperparameter multiplier combinations and predict which one may give better relative quality for a drone-image project.</p>
+            <p>Both models used the same 47-value input, built from project descriptors, multiplier values, squared multiplier values, and descriptor-multiplier interaction terms. Each model produced one predicted relative quality score for each candidate combination.</p>
+            <p>Ridge Regression was used as the main model because it is regularized and easier to interpret with a limited number of independent projects. The MLP was included as a nonlinear comparison model to test whether a small neural network could capture patterns that Ridge Regression may miss.</p>
+            <button type="button" class="detail-link" data-detail-target="models-detail"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> View model details</button>
+          </div>
+          <div>
+            <div class="method-card-row model-card-row inline-model-cards">
+              <article><i class="fa-solid fa-chart-simple"></i><strong>Ridge Regression</strong><span>Main scoring model. It is simple, regularized, and more stable for a limited number of independent projects.</span></article>
+              <article><i class="fa-solid fa-network-wired"></i><strong>MLP</strong><span>Nonlinear comparison model. It uses the same 47-value input and a compact 47 -> 16 -> 1 structure.</span></article>
+            </div>
+            <p class="subsection-label">Testing workflow</p>
+            <div class="numbered-list objective-list testing-steps model-testing-steps">
+              <article><span>01</span><strong>Prepare test descriptors</strong><p>The same descriptor preparation is applied to unseen projects.</p></article>
+              <article><span>02</span><strong>Generate candidates</strong><p>Thirty candidate multiplier combinations are prepared for each test project.</p></article>
+              <article><span>03</span><strong>Score and select</strong><p>Ridge and MLP score the candidates and select the highest-scoring setting.</p></article>
+              <article><span>04</span><strong>Run and compare</strong><p>Selected multipliers are tested in 3DGS and compared with the baseline at 5,000 iterations.</p></article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section section-light" id="results">
+      <div class="research-container story-stack">
+        <div class="story-copy story-copy-wide">
+          <p class="section-kicker">Results</p>
+          <p>The final evaluation compared model-selected 3DGS runs with default baseline runs on unseen test projects at the fixed 5,000-iteration checkpoint. The comparison used PSNR, SSIM, and LPIPS as the main quality metrics, with runtime, Gaussian count, hard-cap behaviour, and visual inspection used as supporting evidence.</p>
+          <p>Both scoring models produced positive mean quality changes among normally completed runs. Ridge Regression was more reliable overall because it completed more projects normally and produced fewer hard-cap cases, while the MLP showed stronger mean improvements in some successful runs but less stable project-level behaviour.</p>
+          <div class="result-section-actions">
+            <button type="button" class="detail-link" data-detail-target="results-detail"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> View evaluation details</button>
+            <a class="detail-link detail-link-primary" href="https://geomatupen.github.io/Thesis-Results-Platform/"><i class="fa-solid fa-chart-line"></i> Interactive results</a>
+          </div>
+        </div>
+        <p class="subsection-label">Model result summary</p>
+        <p class="visual-note result-index-note">Project-wise charts use project index numbers on the x-axis. <button type="button" class="inline-detail-link" data-detail-target="project-index-detail">View project index table</button></p>
+        <div class="tabs result-model-tabs" data-tabs>
+          <div class="tab-list result-model-tab-list" role="tablist" aria-label="Model result summary selector">
+            <button type="button" class="tab is-active" data-tab="ridge-results-panel" role="tab" aria-selected="true">Ridge Regression</button>
+            <button type="button" class="tab" data-tab="mlp-results-panel" role="tab" aria-selected="false">MLP</button>
+          </div>
+          <article class="tab-panel result-model-panel is-active" data-panel="ridge-results-panel" role="tabpanel">
+            <div class="result-chart-grid">
+              <figure class="figure-card result-chart result-overview-chart">
+                <div class="result-overview-surface">
+                  <div class="metric-strip result-metrics result-text-summary result-chart-summary" role="group" aria-label="Ridge result highlights">
+                    <article><strong>11/12</strong><span>completed normally</span></article>
+                    <article><strong>8/11</strong><span>all three metrics improved</span></article>
+                  </div>
+                  <button type="button" class="figure-button" data-modal-src="../assets/figures/figure14a_final_metric_win_loss_summary.png" data-modal-title="Ridge metric improvement summary">
+                    <img src="../assets/figures/figure14a_final_metric_win_loss_summary.png" alt="Ridge metric improvement summary chart">
+                  </button>
+                </div>
+                <figcaption>Ridge improvement summary; hard-cap cases are stopped runs shown separately.</figcaption>
+              </figure>
+              <figure class="figure-card result-detail-chart"><button type="button" class="figure-button" data-modal-src="../assets/figures/figure20_ridge_final_metric_improvement_psnr.png" data-modal-title="Ridge PSNR differences"><span class="result-chart-title">PSNR Improvement</span><img src="../assets/figures/figure20_ridge_final_metric_improvement_psnr.png" alt="Ridge project-wise PSNR difference chart"></button><figcaption>PSNR improvement = model-selected PSNR minus baseline PSNR at 5,000 iterations.</figcaption></figure>
+              <figure class="figure-card result-detail-chart"><button type="button" class="figure-button" data-modal-src="../assets/figures/figure20_ridge_final_metric_improvement_ssim.png" data-modal-title="Ridge SSIM differences"><span class="result-chart-title">SSIM Improvement</span><img src="../assets/figures/figure20_ridge_final_metric_improvement_ssim.png" alt="Ridge project-wise SSIM difference chart"></button><figcaption>SSIM improvement = model-selected SSIM minus baseline SSIM at 5,000 iterations.</figcaption></figure>
+              <figure class="figure-card result-detail-chart"><button type="button" class="figure-button" data-modal-src="../assets/figures/figure20_ridge_final_metric_improvement_lpips.png" data-modal-title="Ridge LPIPS improvements"><span class="result-chart-title">LPIPS Improvement</span><img src="../assets/figures/figure20_ridge_final_metric_improvement_lpips.png" alt="Ridge project-wise LPIPS improvement chart"></button><figcaption>LPIPS improvement = baseline LPIPS minus model-selected LPIPS at 5,000 iterations.</figcaption></figure>
+            </div>
+          </article>
+          <article class="tab-panel result-model-panel" data-panel="mlp-results-panel" role="tabpanel">
+            <div class="result-chart-grid">
+              <figure class="figure-card result-chart result-overview-chart">
+                <div class="result-overview-surface">
+                  <div class="metric-strip result-metrics result-text-summary result-chart-summary" role="group" aria-label="MLP result highlights">
+                    <article><strong>10/12</strong><span>completed normally</span></article>
+                    <article><strong>6/10</strong><span>all three metrics improved</span></article>
+                  </div>
+                  <button type="button" class="figure-button" data-modal-src="../assets/figures/figure14b_final_metric_win_loss_summary.png" data-modal-title="MLP metric improvement summary">
+                    <img src="../assets/figures/figure14b_final_metric_win_loss_summary.png" alt="MLP metric improvement summary chart">
+                  </button>
+                </div>
+                <figcaption>MLP improvement summary; hard-cap cases are stopped runs shown separately.</figcaption>
+              </figure>
+              <figure class="figure-card result-detail-chart"><button type="button" class="figure-button" data-modal-src="../assets/figures/figure22_mlp_final_metric_improvement_psnr.png" data-modal-title="MLP PSNR differences"><span class="result-chart-title">PSNR Improvement</span><img src="../assets/figures/figure22_mlp_final_metric_improvement_psnr.png" alt="MLP project-wise PSNR difference chart"></button><figcaption>PSNR improvement = model-selected PSNR minus baseline PSNR at 5,000 iterations.</figcaption></figure>
+              <figure class="figure-card result-detail-chart"><button type="button" class="figure-button" data-modal-src="../assets/figures/figure22_mlp_final_metric_improvement_ssim.png" data-modal-title="MLP SSIM differences"><span class="result-chart-title">SSIM Improvement</span><img src="../assets/figures/figure22_mlp_final_metric_improvement_ssim.png" alt="MLP project-wise SSIM difference chart"></button><figcaption>SSIM improvement = model-selected SSIM minus baseline SSIM at 5,000 iterations.</figcaption></figure>
+              <figure class="figure-card result-detail-chart"><button type="button" class="figure-button" data-modal-src="../assets/figures/figure22_mlp_final_metric_improvement_lpips.png" data-modal-title="MLP LPIPS improvements"><span class="result-chart-title">LPIPS Improvement</span><img src="../assets/figures/figure22_mlp_final_metric_improvement_lpips.png" alt="MLP project-wise LPIPS improvement chart"></button><figcaption>LPIPS improvement = baseline LPIPS minus model-selected LPIPS at 5,000 iterations.</figcaption></figure>
+            </div>
+          </article>
+        </div>
+        <p class="visual-note chart-term-note"><strong>Note:</strong> Hard cap or HC means that a run exceeded the 6,000,000-Gaussian safety limit set for this thesis to control memory use and runtime. These runs were stopped, so complete final metric values were not available.</p>
+        <p class="subsection-label">Visual assessment</p>
+        <p class="visual-note">The swipe comparisons below show Ridge-selected examples: Pix4D Forensic had the strongest improvement (+1.116 dB PSNR, +0.151 SSIM, +0.235 LPIPS), while Thomas More Church had the weakest result (-0.364 dB PSNR, +0.003 SSIM, +0.002 LPIPS).</p>
+        <div class="visual-case-grid">
+          <figure class="figure-card compare-card">
+            <div class="image-compare" style="--split: 50%">
+              <img src="../assets/figures/figure21a_baseline_preview_005000_a.png" alt="Pix4D Forensic baseline reconstruction preview">
+              <div class="compare-after">
+                <img src="../assets/figures/figure21b_model_preview_005000_a.png" alt="Pix4D Forensic Ridge-selected reconstruction preview">
+              </div>
+              <span class="compare-label compare-label-before">Baseline</span>
+              <span class="compare-label compare-label-after">Model selected</span>
+              <input type="range" min="0" max="100" value="50" aria-label="Swipe Pix4D Forensic baseline and model-selected result">
+            </div>
+            <figcaption>Pix4D Forensic: strong improvement case with clearer ground texture in highlighted areas.</figcaption>
+            <div class="visual-card-actions">
+              <a class="visual-data-link" href="https://support.pix4d.com/hc/en-us/articles/360000235126" target="_blank" rel="noreferrer">Data source</a>
+              <a class="visual-3d-link" href="https://geomatupen.github.io/Thesis-Results-Platform/splat_viewer.html?run=ridge-5k&amp;project=pix4d-forensic&amp;layer=model" title="View Pix4D Forensic Ridge-selected splat in 3D">
+                <i class="fa-solid fa-cube" aria-hidden="true" title="View Pix4D Forensic Ridge-selected splat in 3D"></i>
+                View in 3D
+              </a>
+            </div>
+          </figure>
+          <figure class="figure-card compare-card">
+            <div class="image-compare" style="--split: 50%">
+              <img src="../assets/figures/figure21c_baseline_preview_005000.png" alt="Thomas More Church baseline reconstruction preview">
+              <div class="compare-after">
+                <img src="../assets/figures/figure21d_model_preview_005000.png" alt="Thomas More Church Ridge-selected reconstruction preview">
+              </div>
+              <span class="compare-label compare-label-before">Baseline</span>
+              <span class="compare-label compare-label-after">Model selected</span>
+              <input type="range" min="0" max="100" value="50" aria-label="Swipe Thomas More Church baseline and model-selected result">
+            </div>
+            <figcaption>Thomas More Church: weak improvement case where the selected result remained close to baseline.</figcaption>
+            <div class="visual-card-actions">
+              <a class="visual-data-link" href="https://zenodo.org/records/13732644" target="_blank" rel="noreferrer">Data source</a>
+              <a class="visual-3d-link" href="https://geomatupen.github.io/Thesis-Results-Platform/splat_viewer.html?run=ridge-5k&amp;project=thomas-more-church&amp;layer=model" title="View Thomas More Church Ridge-selected splat in 3D">
+                <i class="fa-solid fa-cube" aria-hidden="true" title="View Thomas More Church Ridge-selected splat in 3D"></i>
+                View in 3D
+              </a>
+            </div>
+          </figure>
+        </div>
+        <p class="results-preview-note thesis-preview-note"><strong>Note:</strong> The swipe maps and preview renders show checkpoint outputs used for this research comparison. The 3D Gaussian Splatting models were stopped at 5,000 or 7,000 training iterations for controlled evaluation, so longer training would generally be expected to improve visual completeness and rendering quality.</p>
+      </div>
+    </section>
+
+    <section class="story-section outputs-section section-alt" id="outputs">
+      <div class="research-container story-stack">
+        <div class="section-heading">
+          <p class="section-kicker">Outputs</p>
+          <p>The thesis produced four public-facing outputs: the open-source Bimba3D-re platform, an interactive results section, the thesis poster, and downloadable research materials. Together, these outputs present the research workflow, selected results, and practical implementation of the thesis.</p>
+        </div>
+        <div class="output-showcase">
+          <article class="output-item output-card-clickable" tabindex="0" data-detail-target="bimba-platform-detail">
+            <figure class="figure-card">
+              <img class="output-preview-img" src="../assets/figures/platform_homepage.png" alt="Bimba3D-re project dashboard screenshot">
+            </figure>
+            <div>
+              <h3>Bimba3D-re platform</h3>
+              <p>A local open-source platform for preparing drone-image projects, running 3DGS experiments, enriching training data, applying recommendation models, and comparing baseline and model-selected reconstructions.</p>
+              <div class="output-links">
+                <a href="https://github.com/geomatupen/bimba3d-re" target="_blank" rel="noreferrer"><i class="fa-brands fa-github"></i> Source code</a>
+                <a href="https://drive.google.com/file/d/1e_Z0Dmww-5Wz0xdf7Aiz-0W82zdd12_t/view?usp=sharing" target="_blank" rel="noreferrer"><i class="fa-solid fa-circle-play"></i> Demo video</a>
+              </div>
+            </div>
+          </article>
+          <a class="output-item output-card-clickable output-card-link" href="https://geomatupen.github.io/Thesis-Results-Platform/">
+            <figure class="figure-card">
+              <img class="output-preview-img" src="../assets/figures/figure20_ridge_final_metric_improvement_psnr.png" alt="Interactive results metric comparison chart preview">
+            </figure>
+            <div>
+              <h3>Interactive results</h3>
+              <p>A website section for exploring selected public result cases, metric charts, checkpoint data, and visual comparisons between baseline and model-selected 3DGS outputs.</p>
+              <div class="output-links">
+                <span><i class="fa-solid fa-chart-line"></i> Open interactive results</span>
+              </div>
+            </div>
+          </a>
+          <article class="output-item output-card-clickable" tabindex="0" data-output-preview="../assets/photo/poster4.png" data-output-title="Thesis poster preview" data-output-actions="true" data-output-download="thesis_poster_preview.png">
+            <figure class="figure-card poster-preview">
+              <img class="output-preview-img" src="../assets/photo/poster4.png" alt="Thesis poster thumbnail">
+            </figure>
+            <div>
+              <h3>Thesis poster</h3>
+              <p>A compact academic summary of the research problem, methodology, main results, platform contribution, and final conclusion.</p>
+              <div class="output-links">
+                <span><i class="fa-solid fa-panorama"></i> Open poster preview</span>
+              </div>
+            </div>
+          </article>
+        </div>
+        <div class="output-download-strip" role="group" aria-label="Downloads">
+          <p class="subsection-label">Downloads</p>
+          <div>
+            <a class="output-action-primary" href="../assets/downloads/Final Thesis Report Draft - Upendra Oli1.pdf" download><i class="fa-solid fa-file-pdf"></i> Download Thesis Report</a>
+            <a class="output-action-secondary" href="https://github.com/geomatupen/Bimba3d-re_research_outputs" target="_blank" rel="noreferrer"><i class="fa-brands fa-github"></i> Research output repository</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section closing-section section-light" id="discussion">
+      <div class="research-container story-stack">
+        <div class="story-grid">
+          <div class="story-copy">
+            <p class="section-kicker">Discussion and Conclusion</p>
+            <p>The results show that information from previous drone-image 3DGS projects can support hyperparameter selection for unseen projects. Ridge Regression was more reliable than the MLP under the tested conditions because it completed more projects normally and produced fewer hard-cap cases.</p>
+            <p>The recommendations improved reconstruction quality for many completed runs, but they also tended to increase runtime and Gaussian count. The workflow should therefore be interpreted as a quality-oriented recommendation method that reduces manual trial-and-error, not as a method that guarantees faster or smaller reconstructions.</p>
+            <p>The findings are limited by the number and diversity of independent projects, the tested multiplier ranges, the fixed 5,000-iteration checkpoint, and the available hardware. Overall, the thesis demonstrates that previous 3DGS reconstruction runs can provide useful evidence for selecting informed starting settings for new drone-image projects.</p>
+          </div>
+          <div class="conclusion-cards">
+            <article><i class="fa-solid fa-lightbulb" aria-hidden="true"></i><div><strong>Main finding</strong><span>Previous 3DGS reconstruction projects can support recommendation for unseen drone-image projects.</span></div></article>
+            <article><i class="fa-solid fa-layer-group" aria-hidden="true"></i><div><strong>Main contribution</strong><span>The thesis provides structured exploration data, scoring models, and the Bimba3D-re implementation platform.</span></div></article>
+            <article><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><div><strong>Main limitation</strong><span>Recommendations are quality-oriented starting settings, not guaranteed optimal or cost-reducing solutions.</span></div></article>
+            <div class="future-work-panel">
+              <h3>Future Work</h3>
+              <div class="chip-row">
+                <span>Larger and more diverse projects</span>
+                <span>Broader multiplier exploration</span>
+                <span>Project-level validation</span>
+                <span>Runtime-aware scoring</span>
+                <span>Copernicus wider-area extension</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="compact-contact">
+          <p>Upendra Oli &middot; Copernicus Master in Digital Earth &middot; Paris Lodron University Salzburg &middot; Palacky University Olomouc &middot; 2026</p>
+          <p>Supervisor: Dr. Stanislav Popelka &middot; Dr. Getachew Workineh Gella</p>
+          <p class="contact-icon-row">
+            <a href="mailto:upendra.oli59@gmail.com"><i class="fa-solid fa-envelope"></i> upendra.oli59@gmail.com</a>
+            <a href="https://upendraoli.xyz" target="_blank" rel="noreferrer"><i class="fa-solid fa-globe"></i> upendraoli.xyz</a>
+            <a href="https://www.linkedin.com/in/upendra-oli-4a8986a0/" target="_blank" rel="noreferrer"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="research-footer story-footer">
+    <div class="research-container footer-inner">
+      <div class="footer-logos" role="group" aria-label="Institution logos">
+        <span class="footer-logo-tile footer-logo-eu"><img src="../logos/co_founded_by_eu/EN_Co-Funded_by_the_EU_POS_horizontal.png" alt="Co-funded by the European Union"></span>
+        <span class="footer-logo-tile footer-logo-cde"><img src="../logos/CDE/CDE_logo_vertical.png" alt="Copernicus Master in Digital Earth"></span>
+        <span class="footer-logo-tile footer-logo-plus"><img src="../logos/PLUS_logos/Logo_4c_schwarze_Schrift.png" alt="Paris Lodron University Salzburg"></span>
+        <span class="footer-logo-tile footer-logo-upol"><img src="../logos/UPOL_logos/UP_logo_horizont_en.png" alt="Palacky University Olomouc"></span>
+      </div>
+      <p class="footer-identity"><strong>Upendra Oli</strong><span>Copernicus Master in Digital Earth &middot; 2026</span></p>
+      <a class="footer-top-link" href="#top" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i><span>Back to top</span></a>
+    </div>
+  </footer>
+
+  <dialog class="figure-modal" id="figure-modal" aria-label="Expanded figure">
+    <button class="modal-close" type="button" aria-label="Close expanded figure">Close</button>
+    <figure>
+      <img src="" alt="">
+      <figcaption></figcaption>
+      <div class="figure-modal-actions" hidden>
+        <a class="figure-modal-open" href="#" target="_blank" rel="noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open in new tab</a>
+        <a class="figure-modal-download" href="#" download><i class="fa-solid fa-download"></i> Download</a>
+      </div>
+    </figure>
+  </dialog>
+
+  <dialog class="detail-modal" id="detail-modal" aria-label="Detailed thesis section">
+    <button class="modal-close" type="button" aria-label="Close details">Close</button>
+    <div class="detail-modal-content"></div>
+  </dialog>
+
+  <template id="methodology-detail">
+    <p class="section-kicker">Methodology Overview</p>
+    <h2>Detailed Methodology</h2>
+    <figure class="figure-card modal-feature-figure">
+      <button type="button" class="figure-button" data-modal-src="../assets/figures/figure3_detailed_methodology_diagram.png" data-modal-title="Detailed learning-based hyperparameter selection workflow">
+        <img src="../assets/figures/figure3_detailed_methodology_diagram.png" alt="Detailed workflow of the learning-based hyperparameter selection process">
+      </button>
+      <figcaption>The full workflow links project preparation, training-data generation, scoring-model training, and final testing.</figcaption>
+    </figure>
+    <p>The detailed methodology is organized into four stages.</p>
+    <p>In the first stage, the drone-image projects are prepared. The images are resized for consistent processing, and SfM/COLMAP is used to estimate camera poses and sparse scene structure. These outputs are needed before 3D Gaussian Splatting training can start. Project descriptors are also prepared in this stage. They summarize project conditions such as image scale, overlap, coverage, viewing geometry, texture, blur risk, terrain variation, and vegetation.</p>
+    <p>In the second stage, training data is created from the model-development projects. Each project is first processed with default 3DGS settings to create a baseline. Then, controlled exploration runs are carried out using grouped hyperparameter multipliers. The selected settings are grouped into geometry, appearance, and densification multipliers, so the search stays practical and easier to understand.</p>
+    <p>After each exploration run, the reconstruction quality is compared with the baseline of the same project. PSNR, SSIM, and LPIPS are used as quality metrics. These values are combined into a relative quality score, which becomes the learning target for the scoring models. A positive relative score means the tested multiplier combination performed better than the default baseline for that project.</p>
+    <p>In the third stage, the scoring models are trained. Each training row contains the project descriptors, one tested multiplier combination, and the relative quality score for that run. Ridge Regression is used as the main scoring model, while a compact MLP is trained as a nonlinear comparison model.</p>
+    <p>In the fourth stage, the trained models are tested on unseen projects. For each test project, candidate multiplier combinations are generated and scored. The highest-scoring combination is selected and used in an actual 3DGS run. The model-selected run is then compared with the default baseline using PSNR, SSIM, LPIPS, runtime, Gaussian count, and visual inspection.</p>
+  </template>
+
+  <template id="training-data-detail">
+    <p class="section-kicker">Training Data Preparation</p>
+    <h2>Detailed Training Data Preparation</h2>
+    <div class="training-detail-flow">
+      <p>The training data came from model-development projects and was built from completed 3DGS experiments. Each usable row links project descriptors, one tested multiplier combination, and the relative quality score from that run.</p>
+
+      <section>
+        <h3>Step 1: Baseline and exploration runs</h3>
+        <p>Each model-development project is first reconstructed with default 3DGS settings to create a project-specific baseline. Controlled exploration runs are then generated by applying sampled multiplier combinations to the default settings. Each exploration run is later compared with the baseline from the same project.</p>
+        <p>The Latin hypercube sampling diagram shows how the multiplier combinations were distributed across the tested multiplier space. This helped create varied training examples without testing every possible parameter combination.</p>
+        <figure class="figure-card training-modal-figure">
+          <button type="button" class="figure-button" data-modal-src="../assets/figures/figure4_latin_hypercube_sampling.png" data-modal-title="Controlled multiplier sampling">
+            <img src="../assets/figures/figure4_latin_hypercube_sampling.png" alt="Latin hypercube sampling illustration">
+          </button>
+          <figcaption>Controlled multiplier sampling for geometry, appearance, and densification groups.</figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h3>Step 2: Project descriptors</h3>
+        <p>Project descriptors are calculated once for each project and repeated across that project's exploration rows. They summarize project conditions such as image detail, overlap, viewing geometry, texture, blur risk, terrain variation, and vegetation.</p>
+        <p>The descriptor distribution figure gives an overview of how these project conditions vary across the training rows. This variation is important because the scoring models need examples from different project situations.</p>
+        <figure class="figure-card training-modal-figure">
+          <button type="button" class="figure-button" data-modal-src="../assets/figures/figure15_project_descriptor_distributions_training_rows.png" data-modal-title="Project descriptor distributions">
+            <img src="../assets/figures/figure15_project_descriptor_distributions_training_rows.png" alt="Project descriptor distributions for training rows">
+          </button>
+          <figcaption>Project descriptor distributions used as input information for the scoring models.</figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h3>Step 3: Relative quality score</h3>
+        <p>After each exploration run, PSNR, SSIM, and LPIPS are compared with the project baseline. These metric differences are normalized and combined into a relative quality score, which becomes the learning target for the scoring models.</p>
+        <p>The score distribution figure shows how the completed exploration runs were spread across weaker and stronger outcomes. A positive relative score means the tested multiplier combination performed better than the default baseline for that project.</p>
+        <figure class="figure-card training-modal-figure">
+          <button type="button" class="figure-button" data-modal-src="../assets/figures/figure16_relative_quality_score_training_rows.png" data-modal-title="Relative quality score distribution">
+            <img src="../assets/figures/figure16_relative_quality_score_training_rows.png" alt="Relative quality score distribution">
+          </button>
+          <figcaption>Relative quality scores compare each completed exploration run with its project baseline.</figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h3>Step 4: Final training rows</h3>
+        <p>The final training table contains 653 usable rows from normally completed exploration runs. Baseline runs are used to calculate relative quality but are not included as training rows. Hard-cap or incomplete runs are excluded from the final training table so the models learn from completed reconstruction outcomes.</p>
+        <div class="training-equation training-modal-equation">
+          <span>Project descriptors</span>
+          <i class="fa-solid fa-plus"></i>
+          <span>tested multiplier combination</span>
+          <i class="fa-solid fa-plus"></i>
+          <span>relative quality score</span>
+          <i class="fa-solid fa-equals"></i>
+          <strong>one training row</strong>
+        </div>
+      </section>
+
+      <p>The final structure lets the scoring models learn how project conditions and multiplier choices relate to reconstruction quality.</p>
+    </div>
+  </template>
+
+  <template id="data-sources-detail">
+    <p class="section-kicker">Training Data Preparation</p>
+    <h2>Drone-Image Data Sources</h2>
+    <p>The 58 drone-image projects used in the thesis came from both public datasets and institutional or privately provided datasets. Public datasets are linked below. Institutional and private datasets are listed by provider only.</p>
+    <div class="data-source-groups">
+      <section>
+        <h3>Public datasets</h3>
+        <ul class="source-link-list">
+          <li><a href="https://zenodo.org/records/13732644" target="_blank" rel="noreferrer">Heritage3DMTL dataset</a><span>Montreal heritage-building UAV projects, including model-development and final-test scenes.</span></li>
+          <li><a href="https://zenodo.org/records/7968619" target="_blank" rel="noreferrer">UAVID3D dataset</a><span>Built-environment UAV imagery used for 3D reconstruction experiments.</span></li>
+          <li><a href="https://www.esri.com/en-us/arcgis/products/arcgis-reality/resources/sample-drone-datasets" target="_blank" rel="noreferrer">Esri sample drone datasets</a><span>Public drone projects including Red Rocks Amphitheatre, Angel Island, Trakai Island Castle, and Air Traffic Control.</span></li>
+          <li><a href="https://support.pix4d.com/hc/en-us/articles/360000235126" target="_blank" rel="noreferrer">Pix4D example datasets</a><span>Example projects including forensic, office-building, eagle-statue, and urban-area datasets.</span></li>
+          <li><a href="https://zenodo.org/records/7271542" target="_blank" rel="noreferrer">Vélez et al. UAV RGB imagery dataset</a><span>UAV RGB imagery over pistachio trees in Spain.</span></li>
+        </ul>
+      </section>
+      <section>
+        <h3>Institutional and privately provided datasets</h3>
+        <ul class="private-source-list">
+          <li>Department of Geoinformatics, Palacky University Olomouc</li>
+          <li>Department of Geoinformatics, Paris Lodron University Salzburg</li>
+          <li>National Heritage Institute</li>
+          <li>Geovation Nepal</li>
+        </ul>
+        <p class="modal-note">These datasets were used with permission for academic thesis research. The original imagery is not redistributed through this website; only derived descriptors, metrics, logs, previews, and summarized results are reported.</p>
+      </section>
+    </div>
+  </template>
+
+  <template id="models-detail">
+    <p class="section-kicker">Model Training and Testing</p>
+    <h2>Model Training and Testing Details</h2>
+    <p>The scoring models were trained using the 653 usable training rows. Each row connected one project context, one tested multiplier combination, and the relative quality score measured from a completed 3DGS exploration run.</p>
+    <p>Both models used the same 47-value input. This input included 10 standardized project descriptors, three multiplier values, three squared multiplier values, and 30 descriptor-multiplier interaction terms. The squared terms helped represent simple curved patterns, while the interaction terms allowed the effect of a multiplier to depend on project conditions.</p>
+    <p>Ridge Regression was used as the main scoring model. It was selected because the number of independent projects was limited, while the input values could be related to each other. Ridge regularization helps keep the fitted coefficients more stable in this kind of setting. The Ridge coefficients were later inspected as model-based indicators, not as proof of direct cause and effect.</p>
+    <p>The MLP was trained as a nonlinear comparison model. It used the same 47-value input and had a compact 47 -> 16 -> 1 structure. The first number represents the input values, the hidden layer has 16 units, and the final output is one predicted relative quality score. The model was kept small because the dataset had a limited number of independent projects.</p>
+    <p>During testing, the trained models were applied to 12 unseen projects. For each test project, candidate multiplier combinations were generated within the defined ranges. Ridge Regression and MLP scored these candidates separately, so they could select different multiplier combinations for the same project.</p>
+    <p>The selected multiplier combination was then converted back to normal multiplier scale and applied to the default 3DGS hyperparameters. A real 3DGS run was completed using the selected setting. This was necessary because the model only predicts a score; the final reconstruction quality still has to be checked through actual 3DGS training.</p>
+    <p>For each test project, the default baseline run, Ridge-selected run, and MLP-selected run used the same images, SfM outputs, 5,000-iteration checkpoint, and processing settings. This kept the comparison focused on the effect of the selected hyperparameter multipliers.</p>
+  </template>
+
+  <template id="results-detail">
+    <p class="section-kicker">Results</p>
+    <h2>Detailed Results</h2>
+    <p>The final evaluation used 12 unseen test projects. For each project, the model-selected 3DGS run was compared with the default baseline run from the same project. All comparisons were made at the fixed 5,000-iteration checkpoint.</p>
+    <p>The main quality metrics were PSNR, SSIM, and LPIPS. Runtime, Gaussian count, hard-cap behaviour, and visual comparison were used as supporting evidence.</p>
+    <h3>Evaluation setup</h3>
+    <div class="result-config-grid">
+      <article><strong>Evaluation checkpoint</strong><span>Baseline and model-selected runs were compared at 5,000 iterations.</span></article>
+      <article><strong>Candidate settings</strong><span>Each model scored 30 candidate multiplier combinations for every unseen test project.</span></article>
+      <article><strong>Comparison basis</strong><span>Each selected run was compared with the default baseline from the same project.</span></article>
+      <article><strong>Quality metrics</strong><span>PSNR, SSIM, and LPIPS were used as the main quality metrics.</span></article>
+      <article><strong>Supporting results</strong><span>Runtime, Gaussian count, hard-cap behaviour, and visual inspection were used to support the metric results.</span></article>
+      <article><strong>Densification schedule</strong><span>Densification remained active until 4,000 iterations, then the existing Gaussian representation was refined.</span></article>
+      <article><strong>Logging and evaluation</strong><span>Training logs were recorded every 100 iterations, and quality evaluation was performed every 1,000 iterations.</span></article>
+      <article><strong>Gaussian hard cap</strong><span>Runs were stopped when they exceeded the 6,000,000-Gaussian limit.</span></article>
+      <article><strong>Processing control</strong><span>A 4-minute cooldown period was used between consecutive runs to reduce laptop overheating during long experiments.</span></article>
+      <article><strong>Image size limit</strong><span>Images were limited to a maximum long edge of 1,400 pixels for feasible processing on the available hardware.</span></article>
+      <article><strong>Training budget</strong><span>The fixed checkpoint enabled consistent comparison across many repeated 3DGS runs, but it was not treated as full convergence.</span></article>
+    </div>
+    <h3>Ridge Regression results</h3>
+    <p>Ridge Regression completed 11 of the 12 test projects normally. Among the completed Ridge runs, PSNR improved in 8 projects, SSIM improved in all 11 projects, and LPIPS improved in all 11 projects. All three metrics improved together in 8 of the 11 completed Ridge runs. The mean differences compared with the baseline were approximately +0.254 dB for PSNR, +0.043 for SSIM, and +0.084 for LPIPS improvement.</p>
+    <h3>MLP results</h3>
+    <p>The MLP also produced positive mean improvements among normally completed runs, and some successful MLP runs showed stronger metric gains. However, it completed only 10 of the 12 projects normally, compared with 11 of 12 for Ridge Regression. It also produced more Gaussian hard-cap cases.</p>
+    <p>Therefore, mean quality changes alone do not determine the better model. Ridge Regression was considered more reliable because it completed one additional project, produced fewer hard-cap cases, and gave more consistent project-level results.</p>
+    <h3>Processing cost</h3>
+    <p>The model-selected settings generally increased the number of Gaussians and runtime compared with the baseline. This means that the workflow improved reconstruction quality within the fixed training budget, but it did not reduce computational cost. In this thesis, optimization mainly means more informed hyperparameter selection and reduced manual trial-and-error, not faster reconstruction.</p>
+    <h3>Visual comparison</h3>
+    <p>The visual comparison supports the quantitative results. For Pix4D Forensic, the Ridge-selected run improved PSNR, SSIM, and LPIPS, and the rendered output showed clearer texture in the highlighted areas. For Thomas More Church, the Ridge-selected result was visually close to the baseline. This shows that the recommendation can help, but the size of improvement differs across projects.</p>
+    <h3>Metric interpretation</h3>
+    <div class="result-term-grid">
+      <article><strong>PSNR</strong><span>Pixel-level similarity. Higher values indicate a rendering closer to the reference image.</span></article>
+      <article><strong>SSIM</strong><span>Structural similarity. Higher values indicate more similar local image structure.</span></article>
+      <article><strong>LPIPS</strong><span>Perceptual difference. Lower raw LPIPS is better, so the thesis reports LPIPS improvement as a positive value.</span></article>
+      <article><strong>Hard cap</strong><span>A run stopped after exceeding the Gaussian-count limit, so complete final quality metrics were not available.</span></article>
+    </div>
+    <div class="result-interpretation">
+      <h3>How to read the charts</h3>
+      <p>The result charts show project-level improvements, not absolute metric values.</p>
+      <p>PSNR and SSIM are calculated as model-selected value minus baseline value. LPIPS is calculated as baseline LPIPS minus model-selected LPIPS because lower raw LPIPS is better. Therefore, positive values indicate improvement for all three plotted metrics.</p>
+      <h3>Final interpretation</h3>
+      <p>The results should be interpreted within the tested dataset, 5,000-iteration checkpoint, 1,400-pixel image limit, 6,000,000 Gaussian hard cap, and available hardware. The recommended settings are quality-oriented starting values, not guaranteed optimal settings.</p>
+    </div>
+  </template>
+
+  <template id="project-index-detail">
+    <p class="section-kicker">Results</p>
+    <h2>Project Index Used in Result Figures</h2>
+    <p>The project-wise result charts use numerical project indices on the x-axis. The table below lists the corresponding test projects.</p>
+    <div class="project-index-grid modal-project-index">
+      <span><strong>1</strong> Maisonneuve Market</span>
+      <span><strong>2</strong> Thomas More Church</span>
+      <span><strong>3</strong> Brasov</span>
+      <span><strong>4</strong> Changunarayan Temple</span>
+      <span><strong>5</strong> Chateau Divci Hrad - Circular Flight</span>
+      <span><strong>6</strong> KTM20 Oblique - Flight 006</span>
+      <span><strong>7</strong> Kninice Church of the Exaltation of the Holy Cross</span>
+      <span><strong>8</strong> Pix4D Forensic</span>
+      <span><strong>9</strong> Telc St. James - 18 March</span>
+      <span><strong>10</strong> Angel Island State Park - Group 3</span>
+      <span><strong>11</strong> Morice</span>
+      <span><strong>12</strong> Uncovice</span>
+    </div>
+  </template>
+
+  <template id="bimba-platform-detail">
+    <p class="section-kicker">Outputs</p>
+    <h2>Bimba3D-re Platform</h2>
+    <p>Bimba3D-re is the local open-source platform developed for the thesis workflow. It supports project-level drone-image processing and the higher-level research workflow used to prepare training data, train scoring models, test recommendations, and compare results.</p>
+    <figure class="figure-card modal-feature-figure">
+      <button type="button" class="figure-button" data-modal-src="../assets/figures/platform_homepage.png" data-modal-title="Bimba3D-re project dashboard">
+        <img src="../assets/figures/platform_homepage.png" alt="Bimba3D-re project dashboard screenshot">
+      </button>
+      <figcaption>Bimba3D-re dashboard with access to project processing and research workflow tools.</figcaption>
+    </figure>
+    <div class="output-feature-grid">
+      <article><strong>Project processing</strong><span>Create projects, prepare images, run COLMAP/SfM, train 3DGS models, and store run-level logs, metrics, previews, and outputs.</span></article>
+      <article><strong>Research workflow</strong><span>Group several projects into shared pipelines for descriptor preparation, offline exploration, training-data generation, model training, and testing.</span></article>
+      <article><strong>Training data</strong><span>Build rows from project descriptors, multiplier combinations, relative quality scores, and hard-cap status for later model training.</span></article>
+      <article><strong>Model testing</strong><span>Score candidate multipliers, run selected 3DGS configurations, and compare baseline, Ridge-selected, and MLP-selected outputs.</span></article>
+      <article><strong>Monitoring</strong><span>Track active project, stage, progress, completed runs, hard-cap runs, elapsed time, logs, and worker messages during long experiments.</span></article>
+      <article><strong>Reuse</strong><span>Run locally on Windows or Linux, use optional Docker support, and reuse notebooks for Ridge and MLP model training.</span></article>
+    </div>
+  </template>
+
+  <script src="../js/script.js"></script>
+</body>
+</html>

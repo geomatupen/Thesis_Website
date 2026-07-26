@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Guided 3DGS Thesis Home</title>
+  <meta name="description" content="Interactive Gaussian home page for Upendra Oli's master's thesis on AI-guided 3D Gaussian Splatting optimization.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="portal-page" data-home-theme="cloud">
+  <main>
+    <section class="gaussian-portal standalone" id="home" aria-label="Interactive Gaussian thesis home navigation">
+      <canvas id="home-canvas" data-photo-src="assets/photo/8S0A2479cc1.png"></canvas>
+      <div class="portal-vignette"></div>
+
+      <header class="portal-title">
+        <p>Copernicus Master in Digital Earth &middot; MSc Thesis &middot; 2026</p>
+        <h1>AI-Guided Optimization for 3D Gaussian Splatting on Drone Images</h1>
+        <div class="portal-meta">
+          <strong>Upendra Oli</strong>
+          <span>Supervisor: Dr. Stanislav Popelka &middot; Dr. Getachew Workineh Gella</span>
+        </div>
+        <div class="portal-title-actions" role="group" aria-label="Home page actions">
+          <a href="pages/thesis.html">Skip to thesis <span aria-hidden="true">&rarr;</span></a>
+          <a class="portal-secondary-action" href="https://geomatupen.github.io/Thesis-Results-Platform/">Interactive results <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        <aside class="gaussian-fact-card" data-gaussian-facts aria-label="Gaussian Splatting notes">
+          <div>
+            <span data-gaussian-fact-heading>Drone images to 3D scene</span>
+            <p data-gaussian-fact-text>Drone images are first processed to estimate camera positions and sparse scene structure. These outputs provide the starting point for 3DGS training.</p>
+          </div>
+          <div class="gaussian-fact-controls" role="group" aria-label="Gaussian note controls">
+            <button type="button" data-gaussian-fact-prev aria-label="Previous note"><span aria-hidden="true">&lsaquo;</span></button>
+            <button type="button" data-gaussian-fact-next aria-label="Next note"><span aria-hidden="true">&rsaquo;</span></button>
+          </div>
+        </aside>
+      </header>
+
+      <div class="theme-picker" role="group" aria-label="Home background theme picker">
+        <button type="button" class="is-active" data-home-theme="cloud" aria-label="Light theme" aria-pressed="true"></button>
+        <button type="button" data-home-theme="dark" aria-label="Dark theme" aria-pressed="false"></button>
+      </div>
+
+      <a class="portal-center-skip" href="pages/thesis.html">Skip to thesis <span aria-hidden="true">&rarr;</span></a>
+
+      <div class="portal-zoom-prompt">
+        <button type="button" id="portal-zoom">Zoom</button>
+        <span>zoom out to reveal, zoom in to see Gaussians</span>
+      </div>
+
+      <p class="home-attribution">
+        Copernicus Master in Digital Earth &middot; Paris-Lodron University Salzburg &middot; Palack&yacute; University Olomouc &middot; Co-funded by the European Union
+      </p>
+    </section>
+  </main>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
