@@ -293,15 +293,18 @@ function openFigureModal(button) {
 function openFigureSource(src, title, options = {}) {
   if (!modal || !modalImage || !modalCaption || !src) return;
 
+  modalImage.hidden = false;
   modalImage.setAttribute("src", src);
   modalImage.setAttribute("alt", title);
+
   modalCaption.textContent = title;
 
   if (modalActions && modalOpenLink && modalDownloadLink) {
     const showActions = Boolean(options.showActions);
+    const actionSrc = options.actionSrc || src;
     modalActions.hidden = !showActions;
-    modalOpenLink.href = src;
-    modalDownloadLink.href = src;
+    modalOpenLink.href = actionSrc;
+    modalDownloadLink.href = actionSrc;
     modalDownloadLink.download = options.downloadName || "";
   }
 
@@ -344,6 +347,7 @@ function initOutputCards(root) {
       if (src) {
         openFigureSource(src, title, {
           showActions: card.getAttribute("data-output-actions") === "true",
+          actionSrc: card.getAttribute("data-output-open") || src,
           downloadName: card.getAttribute("data-output-download") || "",
         });
       } else if (detailTarget) {
