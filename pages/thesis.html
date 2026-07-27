@@ -122,11 +122,11 @@
           <ol class="compact-step-list" aria-label="Training data preparation steps">
             <li>baseline run</li>
             <li>exploration runs</li>
-            <li>quality scoring</li>
+            <li>relative quality scoring</li>
             <li>training row</li>
           </ol>
-          <p class="visual-note training-step-note"><strong>Note:</strong> Each row represents one completed exploration run. The baseline run is used only to calculate the relative quality score.</p>
-          <div class="training-equation">
+          <p class="visual-note training-step-note"><strong>Note:</strong> Each row represents one completed exploration run. The baseline run is used only to calculate the relative quality score, which summarizes whether the run improved or degraded quality compared with that project's baseline.</p>
+          <div class="training-equation training-equation-compact">
             <span>Project descriptors</span>
             <i class="fa-solid fa-plus"></i>
             <span>tested multiplier</span>
@@ -459,8 +459,9 @@
 
       <section>
         <h3>Step 3: Relative quality score</h3>
-        <p>After each exploration run, PSNR, SSIM, and LPIPS are compared with the project baseline. These metric differences are normalized and combined into a relative quality score, which becomes the learning target for the scoring models.</p>
-        <p>The score distribution figure shows how the completed exploration runs were spread across weaker and stronger outcomes. A positive relative score means the tested multiplier combination performed better than the default baseline for that project.</p>
+        <p>The relative quality score compares each exploration run with the default baseline run from the same project. First, PSNR, SSIM, and LPIPS differences are calculated between the exploration run and the baseline. Because higher PSNR and SSIM are better but lower LPIPS is better, the LPIPS difference is reversed so that positive values always mean improvement.</p>
+        <p>The metric differences are then normalized and combined into one relative quality score. This score is used as the learning target for Ridge Regression and MLP. A positive score means the tested multiplier combination performed better than the baseline, while a negative score means it performed worse.</p>
+        <p>The score distribution figure shows how the completed exploration runs were spread across weaker and stronger outcomes.</p>
         <figure class="figure-card training-modal-figure">
           <button type="button" class="figure-button" data-modal-src="../assets/figures/figure16_relative_quality_score_training_rows.png" data-modal-title="Relative quality score distribution">
             <img src="../assets/figures/figure16_relative_quality_score_training_rows.png" alt="Relative quality score distribution">
