@@ -24,6 +24,53 @@ initThesisTopbar();
 initThesisMobileNav();
 initHeroScrollCue();
 
+function getCurrentTheme() {
+  return document.body.getAttribute("data-site-theme")
+    || document.body.getAttribute("data-home-theme")
+    || "cloud";
+}
+
+function withThemeParam(href, theme = getCurrentTheme()) {
+  if (!allowedThemes.has(theme)) return href;
+
+  try {
+    const url = new URL(href, window.location.href);
+    url.searchParams.set("theme", theme);
+    return url.toString();
+  } catch (error) {
+    return href;
+  }
+}
+
+function initResultsPlatformThemeLinks() {
+  const resultsHost = "geomatupen.github.io";
+  const resultsPath = "/Thesis-Results-Platform/";
+
+  document.querySelectorAll("a[href]").forEach((link) => {
+    const originalHref = link.getAttribute("href") || "";
+    let url;
+    try {
+      url = new URL(originalHref, window.location.href);
+    } catch (error) {
+      return;
+    }
+
+    if (url.hostname !== resultsHost || !url.pathname.startsWith(resultsPath)) return;
+    link.dataset.themeHref = originalHref;
+    link.setAttribute("href", withThemeParam(originalHref));
+
+    link.addEventListener("click", () => {
+      link.setAttribute("href", withThemeParam(link.dataset.themeHref || originalHref));
+    });
+  });
+}
+
+function updateResultsPlatformThemeLinks() {
+  document.querySelectorAll("[data-theme-href]").forEach((link) => {
+    link.setAttribute("href", withThemeParam(link.dataset.themeHref || link.getAttribute("href") || ""));
+  });
+}
+
 function initThesisTopbar() {
   const topbar = document.querySelector(".thesis-topbar");
   if (!topbar) return;
@@ -259,6 +306,9 @@ function initChartSwitches(root) {
 
 const modal = document.querySelector("#figure-modal");
 const modalImage = modal?.querySelector("img");
+const modalCanvas = modal?.querySelector(".figure-modal-canvas");
+const modalDocument = modal?.querySelector(".figure-modal-document");
+const modalZoomControls = modal?.querySelector(".figure-modal-controls");
 const modalCaption = modal?.querySelector("figcaption");
 const modalClose = modal?.querySelector(".modal-close");
 const modalActions = modal?.querySelector(".figure-modal-actions");
@@ -271,6 +321,7 @@ const siteThemeButtons = document.querySelectorAll("[data-site-theme]");
 const allowedThemes = new Set(["cloud", "dark"]);
 
 applyStoredTheme();
+initResultsPlatformThemeLinks();
 
 document.querySelectorAll("[data-modal-src]").forEach((button) => {
   bindFigureModal(button);
@@ -293,9 +344,27 @@ function openFigureModal(button) {
 function openFigureSource(src, title, options = {}) {
   if (!modal || !modalImage || !modalCaption || !src) return;
 
-  modalImage.hidden = false;
-  modalImage.setAttribute("src", src);
-  modalImage.setAttribute("alt", title);
+  const isDocument = /\.pdf(?:$|[?#])/i.test(src);
+  resetFigureZoom();
+
+  if (isDocument && modalDocument) {
+    modalImage.hidden = true;
+    modalImage.removeAttribute("src");
+    modalDocument.hidden = false;
+    modalDocument.setAttribute("data", src);
+    modalZoomControls?.setAttribute("hidden", "");
+    modalCanvas?.classList.add("has-document");
+  } else {
+    modalImage.hidden = false;
+    modalImage.setAttribute("src", src);
+    modalImage.setAttribute("alt", title);
+    if (modalDocument) {
+      modalDocument.hidden = true;
+      modalDocument.setAttribute("data", "");
+    }
+    modalZoomControls?.removeAttribute("hidden");
+    modalCanvas?.classList.remove("has-document");
+  }
 
   modalCaption.textContent = title;
 
@@ -309,9 +378,94 @@ function openFigureSource(src, title, options = {}) {
   }
 
   if (typeof modal.showModal === "function") {
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
     modal.showModal();
+    window.requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
   }
 }
+
+const figureZoomState = {
+  scale: 1,
+  x: 0,
+  y: 0,
+  dragging: false,
+  startX: 0,
+  startY: 0,
+  originX: 0,
+  originY: 0,
+};
+
+function applyFigureZoom() {
+  if (!modalImage || !modalCanvas) return;
+
+  const maxX = Math.max(0, (modalCanvas.clientWidth * (figureZoomState.scale - 1)) / 2);
+  const maxY = Math.max(0, (modalCanvas.clientHeight * (figureZoomState.scale - 1)) / 2);
+  figureZoomState.x = Math.max(-maxX, Math.min(maxX, figureZoomState.x));
+  figureZoomState.y = Math.max(-maxY, Math.min(maxY, figureZoomState.y));
+
+  modalImage.style.transform = `translate(${figureZoomState.x}px, ${figureZoomState.y}px) scale(${figureZoomState.scale})`;
+  modalCanvas.classList.toggle("is-zoomed", figureZoomState.scale > 1.02);
+}
+
+function setFigureZoom(nextScale) {
+  figureZoomState.scale = Math.max(1, Math.min(5, nextScale));
+  if (figureZoomState.scale === 1) {
+    figureZoomState.x = 0;
+    figureZoomState.y = 0;
+  }
+  applyFigureZoom();
+}
+
+function resetFigureZoom() {
+  figureZoomState.scale = 1;
+  figureZoomState.x = 0;
+  figureZoomState.y = 0;
+  applyFigureZoom();
+}
+
+modal?.querySelectorAll("[data-figure-zoom]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const action = button.getAttribute("data-figure-zoom");
+    if (action === "in") setFigureZoom(figureZoomState.scale * 1.2);
+    if (action === "out") setFigureZoom(figureZoomState.scale / 1.2);
+    if (action === "reset") resetFigureZoom();
+  });
+});
+
+modalCanvas?.addEventListener("wheel", (event) => {
+  event.preventDefault();
+  const factor = event.deltaY < 0 ? 1.12 : 1 / 1.12;
+  setFigureZoom(figureZoomState.scale * factor);
+}, { passive: false });
+
+modalCanvas?.addEventListener("pointerdown", (event) => {
+  if (figureZoomState.scale <= 1.02) return;
+  figureZoomState.dragging = true;
+  figureZoomState.startX = event.clientX;
+  figureZoomState.startY = event.clientY;
+  figureZoomState.originX = figureZoomState.x;
+  figureZoomState.originY = figureZoomState.y;
+  modalCanvas.setPointerCapture(event.pointerId);
+});
+
+modalCanvas?.addEventListener("pointermove", (event) => {
+  if (!figureZoomState.dragging) return;
+  figureZoomState.x = figureZoomState.originX + event.clientX - figureZoomState.startX;
+  figureZoomState.y = figureZoomState.originY + event.clientY - figureZoomState.startY;
+  applyFigureZoom();
+});
+
+modalCanvas?.addEventListener("pointerup", (event) => {
+  figureZoomState.dragging = false;
+  if (modalCanvas.hasPointerCapture(event.pointerId)) {
+    modalCanvas.releasePointerCapture(event.pointerId);
+  }
+});
+
+modalCanvas?.addEventListener("pointercancel", () => {
+  figureZoomState.dragging = false;
+});
 
 function openDetailTemplate(target) {
   if (!detailModal || !detailModalContent || !target) return;
@@ -327,7 +481,10 @@ function openDetailTemplate(target) {
   initOutputCards(detailModalContent);
 
   if (typeof detailModal.showModal === "function") {
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
     detailModal.showModal();
+    window.requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
   }
 }
 
@@ -366,6 +523,11 @@ function initOutputCards(root) {
 }
 
 modalClose?.addEventListener("click", () => modal?.close());
+modal?.addEventListener("close", () => {
+  if (modalDocument) {
+    modalDocument.setAttribute("data", "");
+  }
+});
 detailModal?.querySelector(".modal-close")?.addEventListener("click", () => detailModal.close());
 
 document.querySelectorAll("button[data-detail-target], a[data-detail-target]").forEach((button) => {
@@ -497,6 +659,7 @@ function setTheme(theme, persist = true) {
   }
   updateThemeButtons(homeThemeButtons, nextTheme, "data-home-theme");
   updateThemeButtons(siteThemeButtons, nextTheme, "data-site-theme");
+  updateResultsPlatformThemeLinks();
 }
 
 function updateThemeButtons(buttons, activeTheme, attributeName) {
