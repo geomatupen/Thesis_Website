@@ -17,6 +17,7 @@ if (navToggle && siteNav) {
 
 initTabs(document);
 initImageCompare(document);
+initSwipeFullscreen(document);
 initChartSwitches(document);
 initOutputCards(document);
 initGaussianFacts(document);
@@ -283,6 +284,44 @@ function initImageCompare(root) {
   });
 }
 
+function initSwipeFullscreen(root) {
+  const swipeModal = document.querySelector("#swipe-modal");
+  const swipeModalBody = swipeModal?.querySelector(".swipe-modal-body");
+  const swipeModalCaption = swipeModal?.querySelector("figcaption");
+  if (!swipeModal || !swipeModalBody || !swipeModalCaption) return;
+
+  root.querySelectorAll(".compare-fullscreen-button").forEach((button) => {
+    if (button.dataset.fullscreenReady === "true") return;
+    button.dataset.fullscreenReady = "true";
+
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const compare = button.closest(".image-compare");
+      if (!compare) return;
+
+      const clonedCompare = compare.cloneNode(true);
+      clonedCompare.dataset.compareReady = "";
+      clonedCompare.querySelector(".compare-fullscreen-button")?.remove();
+      const sourceSlider = compare.querySelector("input[type='range']");
+      const clonedSlider = clonedCompare.querySelector("input[type='range']");
+      if (sourceSlider instanceof HTMLInputElement && clonedSlider instanceof HTMLInputElement) {
+        clonedSlider.value = sourceSlider.value;
+      }
+
+      swipeModalBody.replaceChildren(clonedCompare);
+      initImageCompare(swipeModalBody);
+      swipeModalCaption.textContent = compare.closest("figure")?.querySelector("figcaption")?.textContent || "Baseline and model-selected comparison";
+
+      if (typeof swipeModal.showModal === "function") {
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
+        swipeModal.showModal();
+        window.requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+      }
+    });
+  });
+}
+
 function initChartSwitches(root) {
   root.querySelectorAll("[data-chart-switch]").forEach((switcher) => {
     if (switcher.dataset.chartSwitchReady === "true") return;
@@ -477,6 +516,7 @@ function openDetailTemplate(target) {
   detailModalContent.querySelectorAll("[data-modal-src]").forEach(bindFigureModal);
   initTabs(detailModalContent);
   initImageCompare(detailModalContent);
+  initSwipeFullscreen(detailModalContent);
   initChartSwitches(detailModalContent);
   initOutputCards(detailModalContent);
 
@@ -529,6 +569,7 @@ modal?.addEventListener("close", () => {
   }
 });
 detailModal?.querySelector(".modal-close")?.addEventListener("click", () => detailModal.close());
+document.querySelector("#swipe-modal .modal-close")?.addEventListener("click", () => document.querySelector("#swipe-modal")?.close());
 
 document.querySelectorAll("button[data-detail-target], a[data-detail-target]").forEach((button) => {
   button.addEventListener("click", () => {
@@ -546,6 +587,12 @@ modal?.addEventListener("click", (event) => {
 detailModal?.addEventListener("click", (event) => {
   if (event.target === detailModal) {
     detailModal.close();
+  }
+});
+
+document.querySelector("#swipe-modal")?.addEventListener("click", (event) => {
+  if (event.target === event.currentTarget) {
+    event.currentTarget.close();
   }
 });
 
