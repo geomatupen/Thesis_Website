@@ -625,6 +625,14 @@ function suppressThemeTooltip(button) {
 }
 
 function applyStoredTheme() {
+  const urlTheme = getUrlTheme();
+  const navType = getNavigationType();
+  const isHomePage = document.body.classList.contains("portal-page");
+  if (allowedThemes.has(urlTheme) && !(isHomePage && navType === "reload")) {
+    setTheme(urlTheme, true);
+    return;
+  }
+
   let storedTheme = "";
   let manualTheme = "";
   let sessionTheme = "";
@@ -641,8 +649,7 @@ function applyStoredTheme() {
     lastHomeTheme = "";
   }
 
-  if (document.body.classList.contains("portal-page")) {
-    const navType = getNavigationType();
+  if (isHomePage) {
     const shouldRandomize = navType === "reload" || !allowedThemes.has(sessionTheme);
     const randomTheme = allowedThemes.has(lastHomeTheme)
       ? (lastHomeTheme === "cloud" ? "dark" : "cloud")
@@ -670,6 +677,14 @@ function applyStoredTheme() {
   }
 
   setTheme(allowedThemes.has(sessionTheme) ? sessionTheme : (allowedThemes.has(storedTheme) ? storedTheme : "cloud"), false);
+}
+
+function getUrlTheme() {
+  try {
+    return new URLSearchParams(window.location.search).get("theme") || "";
+  } catch (error) {
+    return "";
+  }
 }
 
 function getNavigationType() {
