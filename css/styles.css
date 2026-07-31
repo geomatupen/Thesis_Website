@@ -2933,8 +2933,8 @@ body[data-site-theme="dark"] .hero-visual img {
 
 .output-showcase {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .outputs-section .section-heading,
@@ -3032,6 +3032,10 @@ body[data-site-theme="dark"].story-layout .output-item {
 .poster-preview .output-preview-img {
   object-fit: cover;
   object-position: top center;
+}
+
+.report-preview {
+  min-height: 190px;
 }
 
 .output-links {
@@ -5766,11 +5770,15 @@ div > .subsection-label:first-child {
   }
 
   .output-showcase {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 760px) {
+  .output-showcase {
+    grid-template-columns: 1fr;
+  }
+
   .story-layout .story-copy h2,
   .story-layout .section-heading h2 {
     font-size: clamp(1.35rem, 6vw, 1.85rem);
