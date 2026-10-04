@@ -346,7 +346,7 @@ function initChartSwitches(root) {
 const modal = document.querySelector("#figure-modal");
 const modalImage = modal?.querySelector("img");
 const modalCanvas = modal?.querySelector(".figure-modal-canvas");
-const modalDocument = modal?.querySelector(".figure-modal-document");
+let modalDocument = modal?.querySelector(".figure-modal-document");
 const modalZoomControls = modal?.querySelector(".figure-modal-controls");
 const modalCaption = modal?.querySelector("figcaption");
 const modalClose = modal?.querySelector(".modal-close");
@@ -380,6 +380,25 @@ function openFigureModal(button) {
   openFigureSource(src, title);
 }
 
+function resetModalDocument() {
+  if (!modalDocument) return;
+
+  modalDocument.hidden = true;
+  modalDocument.setAttribute("data", "");
+
+  const freshDocument = modalDocument.cloneNode(true);
+  modalDocument.replaceWith(freshDocument);
+  modalDocument = freshDocument;
+}
+
+function showModalDocument(src) {
+  resetModalDocument();
+  if (!modalDocument) return;
+
+  modalDocument.hidden = false;
+  modalDocument.setAttribute("data", src);
+}
+
 function openFigureSource(src, title, options = {}) {
   if (!modal || !modalImage || !modalCaption || !src) return;
 
@@ -389,18 +408,14 @@ function openFigureSource(src, title, options = {}) {
   if (isDocument && modalDocument) {
     modalImage.hidden = true;
     modalImage.removeAttribute("src");
-    modalDocument.hidden = false;
-    modalDocument.setAttribute("data", src);
+    showModalDocument(src);
     modalZoomControls?.setAttribute("hidden", "");
     modalCanvas?.classList.add("has-document");
   } else {
     modalImage.hidden = false;
     modalImage.setAttribute("src", src);
     modalImage.setAttribute("alt", title);
-    if (modalDocument) {
-      modalDocument.hidden = true;
-      modalDocument.setAttribute("data", "");
-    }
+    resetModalDocument();
     modalZoomControls?.removeAttribute("hidden");
     modalCanvas?.classList.remove("has-document");
   }
@@ -564,9 +579,7 @@ function initOutputCards(root) {
 
 modalClose?.addEventListener("click", () => modal?.close());
 modal?.addEventListener("close", () => {
-  if (modalDocument) {
-    modalDocument.setAttribute("data", "");
-  }
+  resetModalDocument();
 });
 detailModal?.querySelector(".modal-close")?.addEventListener("click", () => detailModal.close());
 document.querySelector("#swipe-modal .modal-close")?.addEventListener("click", () => document.querySelector("#swipe-modal")?.close());
